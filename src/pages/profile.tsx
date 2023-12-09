@@ -1,3 +1,4 @@
+import BottomNavigation from "@/components/bottom-navigation";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -65,6 +66,7 @@ const ProfilePage = () => {
 
         <div className="h-24"></div>
       </main>
+      <BottomNavigation></BottomNavigation>
     </>
   );
 };
