@@ -1,17 +1,22 @@
 import {
+  CachedConversationWithId,
   Client,
   useConversations,
   useSendMessage,
   useStartConversation,
 } from "@xmtp/react-sdk"; // import the required SDK hooks
 
+import BottomNavigation from "@/components/bottom-navigation";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { useEthersSigner } from "@/lib/ethers";
 import { useClient } from "@xmtp/react-sdk";
 import { useCallback, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
-import BottomNavigation from "@/components/bottom-navigation";
+
+import type { CachedConversation, DecodedMessage } from "@xmtp/react-sdk";
+import { useMessages } from "@xmtp/react-sdk";
 
 type Environment = "dev" | "production" | "local";
 
@@ -50,9 +55,11 @@ const ProfilePage = () => {
   const chainId = useChainId();
   const signer = useEthersSigner({ chainId: chainId });
   const [searchTerm, setSearchTerm] = useState("");
-  const [peerAddress, setPeerAddress] = useState();
-  const [selectedConversation, setSelectedConversation] = useState<any>();
+  const [peerAddress, setPeerAddress] = useState<string>();
+  const [selectedConversation, setSelectedConversation] =
+    useState<CachedConversationWithId>();
   const { client, error, isLoading, initialize, disconnect } = useClient();
+  const [isOnNetwork, setIsOnNetwork] = useState(false);
 
   const { startConversation } = useStartConversation();
   const { conversations } = useConversations();
@@ -69,7 +76,7 @@ const ProfilePage = () => {
   );
 
   const handleStartConversation = useCallback(
-    async (message: string, peerAddress: string) => {
+    async (message: string) => {
       console.log(message);
       if (!message.trim()) {
         alert("Empty message");
@@ -80,6 +87,9 @@ const ProfilePage = () => {
         return;
       }
       const newConversation = await startConversation(peerAddress, message);
+      if (newConversation && newConversation.cachedConversation) {
+        setSelectedConversation(newConversation.cachedConversation);
+      }
     },
     [peerAddress, startConversation],
   );
@@ -93,12 +103,11 @@ const ProfilePage = () => {
     const conversation = conversations[0];
 
     if (conversation && conversation.peerAddress) {
+      alert("sending message");
       await sendMessage(conversation, newMessage);
+    } else {
+      alert("No conversation selected");
     }
-  };
-
-  const createNewConversation = async () => {
-    setSelectedConversation({ messages: [] });
   };
 
   const initXmtpWithKeys = async () => {
@@ -122,10 +131,24 @@ const ProfilePage = () => {
       storeKeys(address, keys);
     }
 
+    setIsOnNetwork(true);
     console.log("initXmtpWithKeys3");
 
     if (keys) {
       await initialize({ keys, options, signer });
+    }
+  };
+
+  const canStartConversation = async (address: string) => {
+    console.log(client?.address);
+    console.log(address);
+    const canMessageStatus = await client?.canMessage(address);
+    if (canMessageStatus) {
+      setPeerAddress(address);
+      // setCanMessage(true);
+      alert("Address is on the network ✅");
+    } else {
+      alert("Address is not on the network ❌");
     }
   };
 
@@ -157,40 +180,62 @@ const ProfilePage = () => {
           </li>
         ))}
 
-        <Button
-          onClick={() => {
-            initXmtpWithKeys();
-          }}
-        >
-          initXmtpWithKeys
-        </Button>
+        {conversations && conversations[0] && (
+          <Messages conversation={conversations[0]} />
+        )}
 
-        <Button
-          onClick={() => {
-            handleStartConversation(
-              "Hello",
-              "0x746368499d51521eeAEE57cF007382d8C39E511a",
-            );
-          }}
-        >
-          handleStartConversation
-        </Button>
+        <div className="flex flex-col gap-4">
+          <Button
+            onClick={() => {
+              console.log(
+                "🚀 ~ file: xmtp.tsx:201 ~ ProfilePage ~ filteredConversations:",
+                conversations,
+              );
+            }}
+          >
+            filteredConversations
+          </Button>
 
-        <Button
-          onClick={() => {
-            createNewConversation();
-          }}
-        >
-          createNewConversation
-        </Button>
+          {!isOnNetwork ? (
+            <Button
+              onClick={() => {
+                initXmtpWithKeys();
+              }}
+            >
+              initXmtpWithKeys
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={() => {
+                  canStartConversation(
+                    "0x5052936D3c98d2d045da4995d37B0DaE80C6F07f",
+                  );
+                }}
+              >
+                canStartConversation && createNewConversation
+              </Button>
+            </>
+          )}
 
-        <Button
-          onClick={() => {
-            handleSendMessage("Hello");
-          }}
-        >
-          handleSendMessage
-        </Button>
+          <Separator />
+
+          <Button
+            onClick={() => {
+              handleStartConversation("Hello");
+            }}
+          >
+            handleStartConversation
+          </Button>
+
+          <Button
+            onClick={() => {
+              handleSendMessage("Hello");
+            }}
+          >
+            handleSendMessage
+          </Button>
+        </div>
       </main>
       <BottomNavigation></BottomNavigation>
     </>
@@ -198,3 +243,45 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+
+const Messages = ({ conversation }: { conversation: CachedConversation }) => {
+  // error callback
+  const onError = useCallback((err: Error) => {
+    // handle error
+  }, []);
+
+  // messages callback
+  const onMessages = useCallback((msgs: DecodedMessage[]) => {
+    // do something with messages
+  }, []);
+
+  const { error, messages, isLoading } = useMessages(conversation, {
+    onError,
+    onMessages,
+  });
+
+  if (error) {
+    return (
+      <div className="text-red-500">
+        An error occurred while loading messages
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return <div className="text-blue-500">Loading messages...</div>;
+  }
+
+  return (
+    <div className="mx-auto my-4 max-w-md rounded-lg bg-gray-100 p-4">
+      <ul className="space-y-4">
+        {messages.map((message) => (
+          <li key={message.id} className="rounded-md bg-white p-4 shadow-md">
+            <p className="text-gray-800">{message.content}</p>
+            {/* Add more details or styles as needed */}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
