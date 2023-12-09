@@ -1,3 +1,4 @@
+import BottomNavigation from "@/components/bottom-navigation";
 import Header from "@/components/header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -104,6 +105,7 @@ const ProfilePage = () => {
       <main className="flex min-h-[calc(100vh-64px)] w-full flex-col px-8 py-20">
         <CardList />
       </main>
+      <BottomNavigation></BottomNavigation>
     </>
   );
 };

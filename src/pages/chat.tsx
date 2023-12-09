@@ -46,6 +46,7 @@ const UserList = () => {
           ))}
         </div>
       </div>
+      <BottomNavigation></BottomNavigation>
     </>
   );
 };
