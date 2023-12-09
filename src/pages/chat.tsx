@@ -1,18 +1,18 @@
 import BottomNavigation from "@/components/bottom-navigation";
 import Header from "@/components/header";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useEthersSigner } from "@/lib/ethers";
+import { shortenEthereumAddress } from "@/lib/utils";
 import {
   CachedConversationWithId,
   Client,
+  useClient,
   useConversations,
   useSendMessage,
   useStartConversation,
 } from "@xmtp/react-sdk";
-import { useEthersSigner } from "@/lib/ethers";
-import { useClient } from "@xmtp/react-sdk";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
-import { Button } from "@/components/ui/button";
-import { shortenEthereumAddress } from "@/lib/utils";
 
 type Environment = "dev" | "production" | "local";
 const ENCODING = "binary";

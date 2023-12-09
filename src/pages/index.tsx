@@ -1,242 +1,114 @@
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import BottomNavigation from "@/components/bottom-navigation";
+import Header from "@/components/header";
+import { Badge } from "@/components/ui/badge";
+import { MessageCircle } from "lucide-react";
 
-const formSchema = z.object({
-  name: z.string().min(2).max(50),
-  email: z.string().email("Invalid email"),
-  tagline: z.string().min(2),
-  interests: z.string().min(5),
-  skills: z.string().min(5),
-  lookingFor: z.string().min(5),
-  contact: z.string().min(2),
-});
-
-export default function Home() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    mode: "onBlur",
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      tagline: "",
-      interests: "",
-      skills: "",
-      lookingFor: "",
+const CardList = () => {
+  const cards = [
+    {
+      id: 1,
+      title: "John Doe",
+      interests: ["Blockchain", "Decentralized Communication"],
+      image: "https://dummyimage.com/200x200",
     },
-  });
-
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-
-    try {
-      const response = await fetch("/api/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("API response:", responseData);
-      } else {
-        console.error("API error:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-
-    console.log(values);
-    setIsSubmitted(true);
-  }
-
-  if (isSubmitted) {
-    return (
-      <>
-        <main className="container flex h-screen flex-col items-center justify-center px-8 py-4">
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-            Submitted Successfully ✅
-          </h2>
-          <p className="pb-4 text-center text-xl text-muted-foreground">
-            Thanks for submitting.
-            <br />
-            You will receive shortly a list of your best matches.
-          </p>
-          <Button
-            variant={"secondary"}
-            onClick={() => {
-              form.reset();
-              setIsSubmitted(false);
-            }}
-          >
-            Go Back
-          </Button>
-        </main>
-      </>
-    );
-  }
-
-  // tagline
-  // 1-5 interests
-  // text bigger
-  // intro text at the top
-  // bottom : contact info, socials, website link
-  //
+    {
+      id: 2,
+      title: "Jane Smith",
+      interests: ["Decentralized Networking"],
+      image: "https://dummyimage.com/200x200",
+    },
+    {
+      id: 3,
+      title: "Alex Johnson",
+      interests: ["Smart Contracts", "Decentralized Communication"],
+      image: "https://dummyimage.com/200x200",
+    },
+    {
+      id: 4,
+      title: "Emily Davis",
+      interests: [
+        "Blockchain",
+        "Decentralized Communication",
+        "Decentralized Networking",
+      ],
+      image: "https://dummyimage.com/200x200",
+    },
+    {
+      id: 5,
+      title: "Michael Brown",
+      interests: ["Blockchain", "Smart Contracts"],
+      image: "https://dummyimage.com/200x200",
+    },
+  ];
 
   return (
-    <>
-      <main className="container flex min-h-[calc(100vh-64px)] w-full max-w-xl flex-col px-8 py-4">
-        <img src="/logo.png" alt="Logo" className="mb-5 max-w-xs" />
-        <h2 className="scroll-m-20 pb-4 text-5xl font-semibold tracking-tight first:mt-0">
-          Coincidence
-        </h2>
-        <p className="pb-4 text-xl text-muted-foreground">
-          Find a teammate, friend, or long-term collaborators.
-          <br />
-          You will receive matches with common interests or with complementary
-          skills.
-        </p>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ fontSize: "15px" }}>My name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ fontSize: "15px" }}>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="hello@abc.xyz" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="tagline"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ fontSize: "15px" }}>
-                    Myself in one sentence
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Cricket in heart, masala in soul"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="interests"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ fontSize: "15px" }}>
-                    My interests
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="Futbol, Anime, Pav Bhaji" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="skills"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ fontSize: "15px" }}>
-                    I am strong in
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Networking, Game mechanics design"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lookingFor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ fontSize: "15px" }}>
-                    I am looking for
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="Backend, Branding" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="contact"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ fontSize: "15px" }}>
-                    How to contact me
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="@Balu on X" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="fixed bottom-0 left-0 right-0 flex items-center justify-around border-t bg-background bg-opacity-0 p-2">
-              <Button
-                className="w-full "
-                style={{ fontSize: "20px" }}
-                type="submit"
-                disabled={!form.formState.isValid}
+    <div className="flex flex-col gap-4">
+      {cards.map((card) => (
+        <div
+          key={card.id}
+          className="rounded-xl border bg-card text-card-foreground shadow"
+        >
+          <div className="flex flex-col items-start space-y-1.5 p-6">
+            <div className="flex w-full flex-row items-center justify-between space-x-4">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                  <img
+                    className="aspect-square h-full w-full"
+                    alt="Image"
+                    src="https://placeholder.com/200x200" // Replace with the actual image URL
+                  />
+                </span>
+                <div>
+                  <p className="text-sm font-medium leading-none">
+                    {card.title}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    description or bio
+                  </p>
+                </div>
+              </div>
+              <button
+                className="ml-auto inline-flex h-9 w-9 items-center justify-center whitespace-nowrap rounded-full border border-input bg-transparent text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                data-state="closed"
+                onClick={() => {
+                  
+                }}
               >
-                Submit
-              </Button>
+                <MessageCircle />
+                <span className="sr-only">New message</span>
+              </button>
             </div>
-          </form>
-        </Form>
 
-        <div className="h-16"></div>
+            {/* Interests Tabs */}
+            <div className=" ml-2 flex flex-col">
+              <p className="leading-7 [&:not(:first-child)]:mt-6">
+                Common Interests
+              </p>
+              <div className="mt-2 flex gap-2">
+                {card.interests.map((interest) => (
+                  <Badge variant="secondary" key={interest}>
+                    {interest}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ProfilePage = () => {
+  return (
+    <>
+      <Header></Header>
+      <main className="flex min-h-[calc(100vh-64px)] w-full flex-col px-8 py-20">
+        <CardList />
       </main>
+      <BottomNavigation></BottomNavigation>
     </>
   );
-}
+};
+
+export default ProfilePage;

@@ -1,3 +1,4 @@
+import BottomNavigation from "@/components/bottom-navigation";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
@@ -78,6 +79,7 @@ const App = () => {
           </Button>
         </form>
       </main>
+      <BottomNavigation></BottomNavigation>
     </>
   );
 };
