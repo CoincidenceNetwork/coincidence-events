@@ -103,9 +103,12 @@ const ProfilePage = () => {
 
   const initXmtpWithKeys = async () => {
     const options = { env: getEnv() };
+    console.log("initXmtpWithKeys1");
 
     if (!address) return;
     let keys: Uint8Array | null = null; // Initialize keys as null
+
+    console.log("initXmtpWithKeys2");
 
     if (!keys && signer) {
       keys = await Client.getKeys(signer, {
@@ -118,6 +121,8 @@ const ProfilePage = () => {
       }
       storeKeys(address, keys);
     }
+
+    console.log("initXmtpWithKeys3");
 
     if (keys) {
       await initialize({ keys, options, signer });
@@ -151,6 +156,14 @@ const ProfilePage = () => {
             </div>
           </li>
         ))}
+
+        <Button
+          onClick={() => {
+            initXmtpWithKeys();
+          }}
+        >
+          initXmtpWithKeys
+        </Button>
 
         <Button
           onClick={() => {

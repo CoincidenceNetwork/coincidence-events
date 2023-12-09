@@ -7,10 +7,13 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_ALCHEMY_API_KEY: z.string(),
+    NEXT_PUBLIC_WALLETCONNECT_API_KEY: z.string(),
     // NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
   },
   runtimeEnv: {
     OPENAI_TOKEN: process.env.OPENAI_TOKEN,
     NEXT_PUBLIC_ALCHEMY_API_KEY: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+    NEXT_PUBLIC_WALLETCONNECT_API_KEY:
+      process.env.NEXT_PUBLIC_WALLETCONNECT_API_KEY,
   },
 });

@@ -1,3 +1,4 @@
+import { ConnectKitButton } from "connectkit";
 import { Croissant, User } from "lucide-react";
 import Link from "next/link";
 
@@ -11,9 +12,7 @@ const Header = () => {
           <Croissant />
           <div className="font-bold">Coincidence</div>
         </Link>
-        <Link href="/profile">
-          <User />
-        </Link>
+        <ConnectKitButton />
       </nav>
     </header>
   );

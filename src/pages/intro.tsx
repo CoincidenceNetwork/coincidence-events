@@ -6,6 +6,7 @@ export default function Home() {
 
 
   // TODO: if user already connected, redirect to /profile
+  
 
   return (
     <>
